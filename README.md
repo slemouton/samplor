@@ -1,3 +1,2 @@
 # samplor
-
-the samplor object for puredata
+The puredata version of the samplor object
