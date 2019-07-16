@@ -1,5 +1,6 @@
 # samplor
 The puredata version of the samplor object
+=====
 Requires the flext library at https://github.com/grrrr/flext
 It is recommanded to install the cyclone library from https://github.com/porres/pd-cyclone/releases
 
@@ -23,3 +24,5 @@ to come ...
 
 ###raspberry version
 to come ...
+=======
+
