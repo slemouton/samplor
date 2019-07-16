@@ -1,0 +1,2 @@
+NAME=samplor2~
+SRCS=samplor2.cpp linkedlist.cpp slm1.cpp
