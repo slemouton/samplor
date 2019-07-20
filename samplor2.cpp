@@ -202,7 +202,7 @@ public flext_dsp
                     
                     x->fposition += x->increment ;
                     x->fposition2 += x->increment;
-                   
+
 					/*ECHANTILLON*/
 					if(!interpol)
 					{
@@ -212,11 +212,20 @@ public flext_dsp
 							index = frames - 1;
 						if (nc > 1)
 							index = index * nc ;
-						sample = tab[index];
+						#if PD_ARRAY_DOUBLE_PRECISION
+							sample = tab[index * 2];
+						#else
+							sample = tab[index];
+						#endif
+						
 						if(in_xfadeflag)  
 						{/* do the loop cross fade !*/
 							sample *= 1. - xfade_amp;
+						#if PD_ARRAY_DOUBLE_PRECISION
+							sample +=  xfade_amp * tab[index - x->loop_dur];						
+						#else
 							sample +=  xfade_amp * tab[index - x->loop_dur];
+						#endif
 						}
 					}
 					else
@@ -233,7 +242,7 @@ public flext_dsp
 								sample = linear_interpol (tab,f);
 							else if(interpol == 2)
 								sample = square_interpol (tab,f);
-							else if(interpol == 3)
+							else
 								sample = cubic_interpol (tab,f);
 						}
 						else
@@ -249,7 +258,7 @@ public flext_dsp
 								sample = (1. - xfade_amp) * square_interpol (tab,f);
 								sample +=  xfade_amp * square_interpol (tab,f- x->loop_dur);
 							}
-							else if(interpol == 3)
+							else 
 							{  /* optimisation possible (un seul appel a cubic_interpol()) */
 								sample = (1. - xfade_amp) * cubic_interpol (tab,f);
 								sample +=  xfade_amp * cubic_interpol (tab,f- x->loop_dur);
@@ -581,7 +590,8 @@ public flext_dsp
 			buffer *b = x->buf;
 			t_sample *out1 = out[0];
 			t_sample sample;
-			float *tab,w_f_index; 
+			//float *tab,w_f_index; 
+			t_sample *tab,w_f_index;
 			float f;
 			long index, frames, nc;
 			
@@ -614,9 +624,16 @@ public flext_dsp
 							f *=  nc ;
 						
 						{
-							
-							if(interpol == 1)
+							if (!interpol)
+							#if PD_ARRAY_DOUBLE_PRECISION
+								sample = tab[2 * long(f)];
+							#else
+								sample = tab[long(f)];
+							#endif
+							else if(interpol == 1)
 								sample = linear_interpol (tab,f);
+							else if(interpol == 2)
+								sample = square_interpol (tab,f);
 							else
 								sample = cubic_interpol (tab,f);
 						}
@@ -828,8 +845,31 @@ public flext_dsp
 			long start;
 			
 			start = p * 0.001 * this->params.sr;
+				
+			if(this->debug)
+			{
+			#if 1 //DEBUG		
+			post ("START_ %d %d %d %d",start,this->inputs.buf,this->inputs.offset,this->inputs.buf->Frames()/this->inputs.buf->Channels());
+				buffer *b = this->inputs.buf;
+			post ("%d %d %d",sizeof(t_sample),sizeof(double),sizeof(b->Data()));
+			//float *tab,w_f_index; 
+			float *tab,w_f_index;
+			float f;
+			long index, frames, nc;
 			
-		//	post ("START %d %d %d %d",start,this->inputs.buf,this->inputs.offset,this->inputs.buf->Frames()/this->inputs.buf->Channels());
+			if (!b)
+				post("oups");
+			if (!b->Valid())
+				post("oups");
+			tab = &((*b)[0]);
+			post("addresses : %d %d %d",&((*b)[0]),&((*b)[1]),tab);
+			frames = b->Frames();
+			nc = b->Channels(); 
+			for (int i=0;i<8;i++)
+				//post("%d %x %llf",i,tab[i*2],tab[i*2]);
+				post("%d %f %f",i,(*b)[i],tab[i*2]);
+			#endif 
+			}	
 			/* n'alloue pas de voix si offset > durée du son */
 			if(this->inputs.buf)
 			{
@@ -1587,37 +1627,26 @@ bool samplor2::CbDsp()
 	switch(num_outputs){
 		case 3 : 
 			SETSIGFUN(samplordspfun,SIGFUN(samplor_perform3));
-		//	post("perform 3");
-			break;
-			
+			break;			
 		case 2 : 
 			if(this->stereo_mode)
 			{
 				SETSIGFUN(samplordspfun,SIGFUN(samplor_perform_stereo));
-			//	post("perform STEREO");
-				
 			}
 			else
 			{
 				SETSIGFUN(samplordspfun,SIGFUN(samplor_perform2));
-		//		post("perform 2");
 			}
 			break;
 			
 			case 1 : 
 			SETSIGFUN(samplordspfun,SIGFUN(samplor_perform1));
-	//		post("perform 1");
 			break;
 			case 0 : SETSIGFUN(samplordspfun,SIGFUN(samplor_perform0));
-	//		post("perform 0");
 			break;
 			default : SETSIGFUN(samplordspfun,SIGFUN(samplor_performN));
-	//		post("perform N");
 			break;
 	}
-#if 0
-
-#endif			
     return true;
 }
 

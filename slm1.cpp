@@ -77,7 +77,49 @@ short randi()
  Interpolations
 ******************/
 
+#if 1 //PD_ARRAY_DOUBLE_PRECISION
+t_sample linear_interpol (t_sample *buf, float alpha) /*NEWTON*/
+{
+	int alpha0 = floor(alpha);
+	t_sample beta0 = *(buf + (alpha0 * 2));
+	t_sample diff1 = buf[(alpha0 * 2) + 2] - beta0;
+	float npoly1 = alpha - alpha0;
+//	post("M %f %f %f ",beta0,diff1,npoly1);
+	return(beta0 + diff1 * npoly1);
+}
+t_sample square_interpol (t_sample *buf, float alpha) /*NEWTON - GREGORY*/
+{
+	int alpha0 = floor(alpha);
+	int alpha02 = 2 * alpha0;
+	t_sample beta0 = buf[alpha02];
+	t_sample beta1 = buf[alpha02 + 2];
+	t_sample beta2 = buf[alpha02 + 4];
+	t_sample diff1 = beta1 - beta0;
+	float npoly1 = alpha - alpha0;
+	t_sample diff2i = beta2 - beta1 ;
+	t_sample diff2 = diff2i - diff1;
+	float npoly2 = 0.5 * npoly1 * (npoly1 - 1.) ;
 
+	return(beta0 + diff1 * npoly1 + diff2 * npoly2);
+}
+t_sample cubic_interpol (t_sample *buf, float alpha) /*NEWTON - GREGORY*/
+{
+	int alpha0 = floor(alpha) - 1;   /* translation */
+	int alpha02 = 2 * alpha0;
+	t_sample beta0 = buf[alpha02];
+	t_sample beta1 = buf[alpha02 + 2];
+	t_sample beta2 = buf[alpha02 + 4];
+	t_sample diff1 = beta1 - beta0;
+	float npoly1 = alpha - alpha0 + 1;
+	t_sample diff2i = beta2 - beta1 ;
+	t_sample diff2 = diff2i - diff1;
+	float npoly2 = 0.5 * npoly1 * (npoly1 - 1.) ;  /* 2! */
+	t_sample diff3 = buf[alpha02 + 6] - beta2 - diff2i - diff2;
+	float npoly3 = npoly2 * (npoly1 - 2.) / 6.;    /* 3! */
+
+	return(beta0 + diff1 * npoly1 + diff2 * npoly2 + diff3 * npoly3);
+}
+#else
 t_sample linear_interpol (t_sample *buf, float alpha) /*NEWTON*/
 {
 	int alpha0 = floor(alpha);
@@ -117,22 +159,11 @@ t_sample cubic_interpol (t_sample *buf, float alpha) /*NEWTON - GREGORY*/
 
 	return(beta0 + diff1 * npoly1 + diff2 * npoly2 + diff3 * npoly3);
 }
+#endif
 
 /******************
 Interpolations for multi channel buffers
 ******************/
-
-
-//t_sample linear_interpol_n (t_sample *buf, double alpha, int nchans) /*NEWTON*/
-//{
-//	int alpha0 = floor(alpha);
-//	t_sample beta0 = *(buf + alpha0);
-//	t_sample diff1 = buf[alpha0 + (1 * nchans)] - beta0;
-//	float npoly1 = (alpha - alpha0);
-////	post("S %f %f %f %f ",alpha, beta0,diff1,npoly1);
-//	return(beta0 + diff1 * npoly1);
-//}
-	
 
 t_sample linear_interpol_n (t_sample *buf, int alpha0, float npoly1, int nchans) /*NEWTON*/
 {

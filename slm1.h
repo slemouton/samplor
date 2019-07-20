@@ -22,6 +22,8 @@ int powerof2p(long n);
 /* double random(double min, double max);
  */
 
+#define PD_ARRAY_DOUBLE_PRECISION 1
+
 t_sample linear_interpol (t_sample *buf, float alpha);
 t_sample square_interpol (t_sample *buf, float alpha);
 t_sample cubic_interpol (t_sample *buf, float alpha);
