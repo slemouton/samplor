@@ -1,4 +1,3 @@
-
 #define DEBUG 0
 #define DEFAULT_SRATE 44100		/* default sampling rate for initialization */
 #define MAX_VOICES 256			/* max # of voices */
@@ -32,12 +31,52 @@ void (thisType::*v_##NAME)(int n,t_sample *const *invecs,t_sample *const *outvec
 std::pair<long,long> get_buffer_loop (const char * buf_name);
 
 typedef double t_samplor_real;	/* samplor calculation has to be in double */
+typedef short t_int16; 					///< a 2-byte int  @ingroup misc
+
+typedef struct _samplorbuffer
+{
+    t_symbol   *b_name;     ///< name of the buffer
+    t_int16    *b_samples;  ///< stored with interleaved channels if multi-channel
+    t_float    *f_samples;  ///< stored with interleaved channels if multi-channel
+    t_float    *f_upsamples; /// oversampling for a better interpolation - use libresample library
+    long       b_frames;    ///< number of sample frames (each one is sizeof(float) * b_nchans bytes)
+    long       b_nchans;    ///< number of channels
+    long       b_size;      ///< size of buffer in floats
+    long       b_sr;        ///< sampling rate of the buffer
+    long       b_framesize;
+    long       b_maxvalue;
+    t_float    one_over_b_maxvalue; /// for optimisation !!
+} t_samplorbuffer;
+
+typedef struct _samplormmap
+{
+    t_symbol   *b_name;         /// name of the buffer
+    int        fd;              /// file descriptor
+    off_t offset;
+    off_t pa_offset;            /// page offset
+    size_t length;
+    long index_start;           /// index du premier echantillon en memoire
+    long index_end;             /// index du dernier echantillon en memoire
+    char *addr;
+    off_t      b_st_size;       /// file size as reported by fstat
+    off_t      b_data_offset;   /// offset before the data as reported by libaudiofile
+    int        byteOrder;
+    long       b_frames;        /// number of sample frames (each one is sizeof(float) * b_nchans bytes)
+    long       b_nchans;        /// number of channels
+    long       b_size;          /// size of buffer in floats
+    long       b_sr;            /// sampling rate of the buffer
+    long       b_framesize;
+    long       b_maxvalue;
+    t_float    one_over_b_maxvalue; /// for optimisation !!
+} t_samplormmap;
 
 typedef struct _samplor_inputs {	/* samplor inputs */
 	//	char *bufprefix;
 	t_symbol *buf_name;
 	//t_buffer *buf;
 	flext::buffer *buf;
+	t_samplorbuffer *samplor_buf;
+    t_samplormmap *samplor_mmap;
 	int samplenumber;
 	t_int offset;			/* position in ms */
 	t_int dur;				/* duration in ms */
@@ -48,6 +87,8 @@ typedef struct _samplor_inputs {	/* samplor inputs */
 	t_int decay;			/* duration in ms */
 	t_int sustain;			/* value in % of amplitude */
 	t_int release;			/* duration in ms */
+	t_int susloopstart;      /*loop points in samples (new in version 2.91)*/
+    t_int susloopend;
 	t_samplor_real transp;
 	t_float amp;
 	t_float pan;
@@ -55,7 +96,9 @@ typedef struct _samplor_inputs {	/* samplor inputs */
 	t_int env;
 	t_int chan;
 	t_int chan2;
-	
+    t_int chan3;
+    t_int chan4;
+    t_samplor_real release_curve;	
 } t_samplor_inputs;
 
 typedef struct _samplor_params {	/* samplor parameters and pre-calculated values */
@@ -82,7 +125,10 @@ typedef struct _samplor {				/* samplor control structure */
 	long voice_stealing;				/* special mode */
 	long loop_xfade;					/* special mode */
 	long debug;
-
+	long active_voices;  /* nombre de voix actives */
+    long polyphony;  /* nombre de voix actives */
+    t_samplor_real modwheel;
+    long n_sf;
 } t_samplor;
 
 #if 0

@@ -17,7 +17,7 @@
 #include <tr1/unordered_map>
 #include "slm1.h"
 #include "samplor2.h"
-#define VERSION "samplor2 v2.43 - charlie special"
+#define VERSION "samplor3 v0.00 - after max version 3.46"
 #define MULTIPAN 1
 #define DELAY_ACTIVE 1
 #define WINAR 1
@@ -53,6 +53,8 @@ public flext_dsp
 		long debug;
 		long active_voices;  /* nombre de voix actives */
 		long polyphony;  /* nombre de voix actives */
+		t_samplor_real modwheel;
+    	long n_sf;
 		long num_outputs;			/* nombre de sorties (1,2 ou 3) */
 		long stereo_mode;
 		t_sample *vectors[SAMPLOR_MAX_OUTCOUNT+1]; 
@@ -72,20 +74,29 @@ public flext_dsp
 			inputs.decay = 2;
 			inputs.sustain = 100;
 			inputs.release = 2;
+			inputs.susloopstart = 0;
+    		inputs.susloopend = 0;
+    		inputs.release_curve = 1.;
 			inputs.transp = 1.;
 			inputs.amp = 1.;
 			inputs.pan = 0.5;
 			inputs.rev = 1.;
 			inputs.env = 1;		//window type
 			inputs.buf = 0;
+			inputs.buf_name = 0;
+			inputs.samplor_buf = 0;
 			params.sr = DEFAULT_SRATE;
 			params.sp = 1 / params.sr;
-			debug = 0;
+			samplor_windows();
+			list_init(&this->waiting_notes);
 			interpol = 1;		/* default : linear interpolation */
 			voice_stealing = 0;	/* default : no voice stealing */
 			loop_xfade = 0;	/* default : no voice stealing */
-			samplor_windows();
-			list_init(&this->waiting_notes);
+    		debug = 0;
+    		active_voices = 0;
+    		modwheel = 1.;
+    		n_sf = 1;
+    		//buf_tab = (t_hashtab *)hashtab_new(0);//hashtable initialisation :
 		}
 		
 		/* 
