@@ -1249,7 +1249,7 @@ public flext_dsp
 				sample = GetAInt(av[2]);
 				while (curr != LIST_END) 
 				{
-					if((curr->samplenumber == sample))
+					if(curr->samplenumber == sample)
 					{curr->loop_beg_d = susloopstart;
 						curr->loop_end_d = susloopend;
 						curr->loop_dur_d = susloopend - susloopstart;
@@ -1303,14 +1303,17 @@ public flext_dsp
 			float amp;
 			
 			if (ac > 1) 
+			{
 				if (IsSymbol(av[1]))
 					samplor_bufname(GetSymbol(av[1])->s_name);
 				else 
-					samplor_buf(GetInt(av[1]));
+					{samplor_buf(GetInt(av[1]));}
+			}
 			if (ac > 2) samplor_offset(GetInt(av[2]));
 			if (ac > 3) samplor_dur(GetInt(av[3]));
 			if (ac > 4) samplor_transp(GetFloat(av[4]));
 			if (ac > 5)  // linear amplitude 
+			{
 				if ((amp = GetFloat(av[5])) > 0.)
 					samplor_amp(amp);
 				else 	// noteoff
@@ -1321,17 +1324,18 @@ public flext_dsp
 						samplor_stop_one_voice(this->inputs.samplenumber,this->inputs.transp);
 					return;
 				}
-			if (ac > 6) 
+			}
+			if (ac > 6)
+			{
 				if(IsFloat (av[6]))
 					samplor_pan(GetFloat(av[6]));
 				else if (IsInt (av[6]))
 					samplor_pan(GetInt(av[6]));
-			
+			}			
 			if (ac > 7) samplor_rev(GetFloat(av[7]));
 			samplor_start(GetInt(av[0]));
 		}
-
-		
+	
 		void samplor_performN(int n,t_sample *const *invecs,t_sample *const *outvecs)
 		{
 			long i =  n;

@@ -1,4 +1,4 @@
-#N canvas 298 186 1535 639 10;
+#N canvas 145 186 1535 639 10;
 #X msg 34 163 adsr% 30 5 50 30;
 #N canvas 930 173 750 440 stereoExample 0;
 #X floatatom 171 180 0 0 0 0 - - -;
@@ -17,7 +17,7 @@
 #X floatatom 268 167 0 0 0 0 - - -;
 #X obj 269 145 / 16;
 #X obj 269 -7 vsl 15 128 0 127 0 0 empty empty empty 0 -9 0 10 -262144
--1 -1 0 1;
+-1 -1 8800 1;
 #X msg 98 197 stop;
 #X obj 156 101 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
@@ -46,7 +46,7 @@
 #X connect 10 7 9 1;
 #X restore 610 227 pd MultiChannelExample;
 #X msg 8 350 0 1 0 -2 1 1;
-#N canvas 706 211 987 485 anotherTestPatch 0;
+#N canvas 693 211 987 485 anotherTestPatch 0;
 #X msg 159 261 0 sinus 0 2000 1 0;
 #X msg 156 239 0 sinus 0 2000 1 0.4;
 #X msg 241 114 \; samplor_ 0 sinus 8000 100 0.298;
@@ -125,7 +125,7 @@
 #X msg 271 120 10;
 #X msg 8 312 0 2 0 -1 1 1 0;
 #X msg 8 250 0 1 200 -1 1 0;
-#N canvas 765 93 368 361 AVerySimpleSampler 0;
+#N canvas 587 93 368 361 AVerySimpleSampler 0;
 #X floatatom 262 127 0 0 0 0 - - -;
 #X obj 98 219 t b f;
 #X msg 42 267 stop 1;
@@ -139,11 +139,11 @@
 #X obj 98 146 / 330;
 #X obj 98 124 mtof;
 #X obj 102 16 hsl 128 15 0 127 0 0 empty empty empty -2 -8 0 10 -262144
--1 -1 0 1;
+-1 -1 5200 1;
 #X text 100 169 (reference pitch : E);
 #X obj 98 97 cyclone/sustain;
 #X obj 116 244 nbx 5 14 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 10
--262144 -1 -1 0 256;
+-262144 -1 -1 3 256;
 #X floatatom 99 36 5 0 0 0 - - -, f 5;
 #X connect 1 0 4 0;
 #X connect 1 1 4 4;
@@ -166,7 +166,7 @@
 #X obj 83 371 r samplor_;
 #X msg 306 120 2;
 #X msg 250 118 0;
-#N canvas 1140 23 428 337 more 1;
+#N canvas 1140 23 428 337 more 0;
 #X obj 98 231 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X msg 98 254 debug \$1;
@@ -6298,9 +6298,13 @@
 #X msg 126 95 get_buffer_loop sample1;
 #X msg 122 66 buffer_loop sample1 256 43844;
 #X msg 111 43 buffer_loop sample1 10000 32000;
+#X msg 142 125 0 1 0 -1 1 1;
+#X msg 152 146 0 1 0 -1 1 0;
 #X connect 1 0 0 0;
 #X connect 2 0 0 0;
 #X connect 3 0 0 0;
+#X connect 4 0 0 0;
+#X connect 5 0 0 0;
 #X restore 610 279 pd loops;
 #X text 2 1 samplor2~ version 2.4;
 #X text 187 426 Arguments: The first argument is the number of outlets
@@ -6341,6 +6345,7 @@ a sound;
 #X floatatom 457 297 0 0 0 0 - - -;
 #X msg 457 315 interpol \$1;
 #X msg 405 255 0 sample1 0 1000 0.75 1;
+#X msg 1061 369 read sinus-440.aif sample1;
 #X connect 0 0 71 0;
 #X connect 3 0 71 0;
 #X connect 5 0 23 0;
@@ -6386,3 +6391,4 @@ a sound;
 #X connect 72 0 73 0;
 #X connect 73 0 71 0;
 #X connect 74 0 71 0;
+#X connect 75 0 33 0;
