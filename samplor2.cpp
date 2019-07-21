@@ -91,7 +91,7 @@ public flext_dsp
 			list_init(&this->waiting_notes);
 			interpol = 1;		/* default : linear interpolation */
 			voice_stealing = 0;	/* default : no voice stealing */
-			loop_xfade = 0;	/* default : no voice stealing */
+			loop_xfade = 0;
     		debug = 0;
     		active_voices = 0;
     		modwheel = 1.;
@@ -858,8 +858,7 @@ public flext_dsp
 			start = p * 0.001 * this->params.sr;
 				
 			if(this->debug)
-			{
-			#if 1 //DEBUG		
+			{		
 			post ("START_ %d %d %d %d",start,this->inputs.buf,this->inputs.offset,this->inputs.buf->Frames()/this->inputs.buf->Channels());
 				buffer *b = this->inputs.buf;
 			post ("%d %d %d",sizeof(t_sample),sizeof(double),sizeof(b->Data()));
@@ -876,10 +875,8 @@ public flext_dsp
 			post("addresses : %d %d %d",&((*b)[0]),&((*b)[1]),tab);
 			frames = b->Frames();
 			nc = b->Channels(); 
-			for (int i=0;i<8;i++)
-				//post("%d %x %llf",i,tab[i*2],tab[i*2]);
-				post("%d %f %f",i,(*b)[i],tab[i*2]);
-			#endif 
+			//for (int i=0;i<8;i++)
+			//	post("%d %f %f",i,(*b)[i],tab[i*2]);
 			}	
 			/* n'alloue pas de voix si offset > durée du son */
 			if(this->inputs.buf)
@@ -1517,7 +1514,7 @@ public flext_dsp
 			this->debug = d;
 			samplist_display(&(this->list));
 			samplist_count(&(this->list));
-/*			if (d == 2)
+			if (d == 2)
 			{
 				t_samplor_entry *prev = this->list.used;
 				t_samplor_entry *curr = prev;
@@ -1544,8 +1541,7 @@ public flext_dsp
 						curr = curr->next;
 					}
 				}
-			}
-*/	
+			}	
 		}
 		
 		static void setup(t_classid c)
@@ -1730,7 +1726,8 @@ samplor2::samplor2( int numoutputs,int maxvoices)
 	samplor_maxvoices(maxvoices);	
 	time = 0;
     count = 0;
-	active_voices = 0;
+//  	dtd = 0;
+//    local_double_buffer = 1;
 	
 	for (i=0;i <= this->num_outputs;i++)
 		this->vectors[i] = NULL;

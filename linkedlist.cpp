@@ -63,7 +63,6 @@ t_samplor_entry *samplist_new_voice(t_samplor_list *x, long start, t_samplor_inp
     std::pair<long,long> suslooppoints(0,0);
 	
 	t_samplor_entry *niou = x->free;
-	
 	if(niou == (t_samplor_entry *)LIST_END) return ((t_samplor_entry *) 0);
 	else
 	{
